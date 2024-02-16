@@ -16,6 +16,8 @@ namespace Tables.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        Random random = new Random();
+
         public MainWindow()
         {
             InitializeComponent();
