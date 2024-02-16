@@ -38,7 +38,15 @@ namespace Tables.Wpf
         {
             if (e.Key == Key.Enter)
             {
-                
+                int userAnswer = int.Parse(txtAnswer.Text);
+                if (userAnswer == answer)
+                {
+                    lblQuestion.Background = Brushes.Green;
+                }
+                else
+                {
+                    lblQuestion.Background = Brushes.Red;
+                }
             }
         }
 
