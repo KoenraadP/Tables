@@ -20,5 +20,13 @@ namespace Tables.Wpf
         {
             InitializeComponent();
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            cmbSelection.Items.Add(2);
+            cmbSelection.Items.Add(4);
+            cmbSelection.Items.Add(5);
+            cmbSelection.Items.Add(10);
+        }
     }
 }

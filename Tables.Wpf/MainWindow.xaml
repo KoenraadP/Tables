@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tables.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Tafels" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
         <Label x:Name="lblQuestion" Content="0 : 0" HorizontalAlignment="Center" Margin="0,70,0,0" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="112" Width="460" FontSize="72"/>
         <TextBox HorizontalContentAlignment="Center" x:Name="txtAnswer" HorizontalAlignment="Center" Margin="0,244,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="308" FontSize="72"/>
