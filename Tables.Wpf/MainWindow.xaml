@@ -8,8 +8,8 @@
         Title="Tafels" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
         <Label x:Name="lblQuestion" Content="0 : 0" HorizontalAlignment="Center" Margin="0,70,0,0" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="112" Width="460" FontSize="72"/>
-        <TextBox HorizontalContentAlignment="Center" x:Name="txtAnswer" HorizontalAlignment="Center" Margin="0,244,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="308" FontSize="72"/>
-        <ComboBox x:Name="cmbSelection" HorizontalAlignment="Left" Margin="37,52,0,0" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalContentAlignment="Center" x:Name="txtAnswer" HorizontalAlignment="Center" Margin="0,244,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="308" FontSize="72" KeyDown="txtAnswer_KeyDown"/>
+        <ComboBox x:Name="cmbSelection" HorizontalAlignment="Left" Margin="37,52,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbSelection_SelectionChanged"/>
 
     </Grid>
 </Window>
