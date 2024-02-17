@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tables.Wpf"
         mc:Ignorable="d"
-        Title="Tafels" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="Tafels" Height="382" Width="564" Loaded="Window_Loaded">
     <Grid>
-        <Label x:Name="lblQuestion" Content="0 : 0" HorizontalAlignment="Center" Margin="0,70,0,0" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="112" Width="460" FontSize="72"/>
-        <TextBox HorizontalContentAlignment="Center" x:Name="txtAnswer" HorizontalAlignment="Center" Margin="0,244,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="308" FontSize="72" KeyDown="txtAnswer_KeyDown"/>
-        <ComboBox x:Name="cmbSelection" HorizontalAlignment="Left" Margin="37,52,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbSelection_SelectionChanged"/>
+        <Label x:Name="lblQuestion" Content="0 : 0" HorizontalAlignment="Center" Margin="0,47,0,0" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="112" Width="392" FontSize="72"/>
+        <TextBox HorizontalContentAlignment="Center" x:Name="txtAnswer" HorizontalAlignment="Center" Margin="0,159,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="308" FontSize="72" KeyDown="txtAnswer_KeyDown"/>
+        <ComboBox x:Name="cmbSelection" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="544" SelectionChanged="cmbSelection_SelectionChanged"/>
+        <Button x:Name="btnNext" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="Volgende" HorizontalAlignment="Center" Margin="0,276,0,0" VerticalAlignment="Top" Width="308" Height="50" FontSize="24" IsEnabled="False" Click="BtnNext_Click"/>
 
     </Grid>
 </Window>
