@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Media;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -42,14 +43,27 @@ namespace Tables.Wpf
             elapsedTime = elapsedTime.Add(TimeSpan.FromSeconds(1));
             tbkTimer.Text = elapsedTime.ToString(@"hh\:mm\:ss");
 
-            if (elapsedTime.TotalSeconds == 60)
+            if (elapsedTime.TotalSeconds == 3)
             {
                 timer.Stop();
                 txtAnswer.Clear();
                 txtAnswer.IsEnabled = false;
-                btnStart.Visibility = Visibility.Visible;
-                btnStart.Focus();
                 lblQuestion.Visibility = Visibility.Hidden;
+
+                SystemSounds.Exclamation.Play();
+
+                var result = MessageBox.Show($"Je score was {score} - wil je nog eens proberen?", "Gedaan!", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    btnStart.Visibility = Visibility.Visible;
+                    btnStart.Focus();
+                    
+                }
+                else
+                {
+                    Close();
+                }
             }
         }
 
