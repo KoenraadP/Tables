@@ -37,7 +37,7 @@ namespace Tables.Wpf
             elapsedTime = elapsedTime.Add(TimeSpan.FromSeconds(1));
             tbkTimer.Text = elapsedTime.ToString(@"hh\:mm\:ss");
 
-            if (elapsedTime.TotalSeconds == 3)
+            if (elapsedTime.TotalSeconds == 60)
             {
                 timer.Stop();
                 txtAnswer.Clear();
