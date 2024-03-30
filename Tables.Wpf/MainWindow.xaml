@@ -11,6 +11,9 @@
         <TextBox HorizontalContentAlignment="Center" x:Name="txtAnswer" HorizontalAlignment="Center" Margin="0,159,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="308" FontSize="72" KeyDown="txtAnswer_KeyDown"/>
         <ComboBox x:Name="cmbSelection" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="544" SelectionChanged="cmbSelection_SelectionChanged"/>
         <Button x:Name="btnNext" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="Volgende" HorizontalAlignment="Center" Margin="0,276,0,0" VerticalAlignment="Top" Width="308" Height="50" FontSize="24" IsEnabled="False" Click="BtnNext_Click"/>
+        <TextBlock x:Name="tbkTimer" HorizontalAlignment="Left" Margin="10,310,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,47,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.858,-6.427" Height="40" Width="89" Click="btnStart_Click"/>
+        <Label x:Name="lblScore" Content="Punten: " HorizontalAlignment="Left" Margin="467,47,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
