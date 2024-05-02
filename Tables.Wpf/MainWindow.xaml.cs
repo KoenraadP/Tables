@@ -79,22 +79,29 @@ namespace Tables.Wpf
         private void txtAnswer_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter && !string.IsNullOrEmpty(txtAnswer.Text))
-            {                
-                int userAnswer = int.Parse(txtAnswer.Text);
-                if (userAnswer == answer)
+            {
+                try
                 {
-                    score++;
-                    lblScore.Content = $"Score: {score}";
-                    lblQuestion.Background = Brushes.Green;
-                    btnNext.IsEnabled = true;
-                    txtAnswer.Clear();
-                    btnNext.Focus();
+                    int userAnswer = int.Parse(txtAnswer.Text);
+                    if (userAnswer == answer)
+                    {
+                        score++;
+                        lblScore.Content = $"Score: {score}";
+                        lblQuestion.Background = Brushes.Green;
+                        btnNext.IsEnabled = true;
+                        txtAnswer.Clear();
+                        btnNext.Focus();
+                    }
+                    else
+                    {
+                        lblQuestion.Background = Brushes.Red;
+                        Clear();
+                    }
                 }
-                else
+                catch
                 {
-                    lblQuestion.Background = Brushes.Red;
-                    Clear();
-                }                
+
+                }                            
             }
         }
 
@@ -112,7 +119,7 @@ namespace Tables.Wpf
         private void GenerateQuestion(int tableNumber)
         {
             int decision = rng.Next(0, 2);
-            int randomNr = rng.Next(1, 11);
+            int randomNr = rng.Next(2, 11);
 
             if (decision == 0)
             {
@@ -123,6 +130,11 @@ namespace Tables.Wpf
             else
             {
                 // division
+                while (randomNr == tableNumber)
+                {
+                    randomNr = rng.Next(2, 11);
+                }
+
                 answer = randomNr;
                 lblQuestion.Content = $"{randomNr*tableNumber} : {tableNumber}";
             }
