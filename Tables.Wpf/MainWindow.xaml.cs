@@ -1,4 +1,5 @@
-﻿using System.Media;
+﻿using System.IO;
+using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,10 +20,14 @@ namespace Tables.Wpf
         private int score;
         private readonly DispatcherTimer timer;
         private TimeSpan elapsedTime;
+        private string user;
+        private int highScore;
 
-        public MainWindow()
+        public MainWindow(string selectedUser)
         {
             InitializeComponent();
+
+            user = selectedUser;
 
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -30,10 +35,14 @@ namespace Tables.Wpf
 
             txtAnswer.IsEnabled = false;
             btnStart.Focus();
+
+            tbkTimer.Visibility = Visibility.Hidden;            
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
+            CheckScore(score);
+
             elapsedTime = elapsedTime.Add(TimeSpan.FromSeconds(1));
             tbkTimer.Text = elapsedTime.ToString(@"hh\:mm\:ss");
 
@@ -45,7 +54,7 @@ namespace Tables.Wpf
                 lblQuestion.Visibility = Visibility.Hidden;
 
                 SystemSounds.Exclamation.Play();
-
+                lblScore.Visibility = Visibility.Visible;
                 var result = MessageBox.Show($"Je score was {score} - wil je nog eens proberen?", "Gedaan!", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (result == MessageBoxResult.Yes)
@@ -63,6 +72,7 @@ namespace Tables.Wpf
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            
             cmbSelection.Items.Add("Alles");
             options = new int[]{ 2, 4, 5, 8, 10 };
             foreach (int option in options)
@@ -71,12 +81,16 @@ namespace Tables.Wpf
             }
 
             cmbSelection.SelectedIndex = 0;
-
+            lblScore.Visibility = Visibility.Hidden;
             txtAnswer.Visibility = Visibility.Hidden;
-            lblQuestion.Visibility = Visibility.Hidden;
+            lblQuestion.Content = $"Dag {user} !";
+
+            highScore = ReadScore();
+
+            lblHighScore.Content = highScore;
         }
 
-        private void txtAnswer_KeyDown(object sender, KeyEventArgs e)
+        private void TxtAnswer_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter && !string.IsNullOrEmpty(txtAnswer.Text))
             {
@@ -105,7 +119,7 @@ namespace Tables.Wpf
             }
         }
 
-        private void cmbSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CmbSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
                 tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
                 ? options[rng.Next(0, options.Length)]
@@ -114,6 +128,23 @@ namespace Tables.Wpf
                 GenerateQuestion(tableNumber);
                 lblQuestion.Background = Brushes.Transparent;
                 Clear();       
+        }
+
+        private void BtnStart_Click(object sender, RoutedEventArgs e)
+        {
+            score = 0;
+            elapsedTime = TimeSpan.Zero;
+            timer.Start();
+            btnStart.Visibility = Visibility.Hidden;
+            txtAnswer.Visibility = Visibility.Visible;
+            lblQuestion.Visibility = Visibility.Visible;
+            lblScore.Visibility = Visibility.Hidden;
+            txtAnswer.IsEnabled = true;
+            txtAnswer.Focus();
+
+            GenerateQuestion(tableNumber);
+            lblQuestion.Background = Brushes.Transparent;
+            Clear();
         }
 
         private void GenerateQuestion(int tableNumber)
@@ -160,20 +191,39 @@ namespace Tables.Wpf
             lblQuestion.Background = Brushes.Transparent;
         }
 
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+        private int ReadScore()
         {
-            score = 0;
-            elapsedTime = TimeSpan.Zero;
-            timer.Start();
-            btnStart.Visibility = Visibility.Hidden;
-            txtAnswer.Visibility = Visibility.Visible;
-            lblQuestion.Visibility = Visibility.Visible;
-            txtAnswer.IsEnabled = true;
-            txtAnswer.Focus();
+            string path = Environment.CurrentDirectory + @"\highscores\";
+            string fileName = $"{user}.score";
 
-            GenerateQuestion(tableNumber);
-            lblQuestion.Background = Brushes.Transparent;
-            Clear();
+            string fullPath = Path.Combine(path, fileName);
+
+            if (File.Exists(fullPath))
+            {
+                highScore = int.Parse(File.ReadAllText(fullPath));
+                return highScore;
+            }
+
+            return 0;
+        }
+
+        private void WriteScore()
+        {
+            string path = Environment.CurrentDirectory + @"\highscores\";
+            string fileName = $"{user}.score";
+
+            string fullPath = Path.Combine(path, fileName);
+
+            File.WriteAllText(fullPath, highScore.ToString());
+        }
+
+        private void CheckScore(int score)
+        {
+            if (score > highScore)
+            {
+                highScore = score;
+                WriteScore();
+            }
         }
     }
 }

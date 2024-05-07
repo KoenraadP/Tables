@@ -9,6 +9,7 @@ namespace Tables.Wpf
     /// </summary>
     public partial class App : Application
     {
+
     }
 
 }
