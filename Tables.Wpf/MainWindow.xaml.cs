@@ -88,9 +88,11 @@ namespace Tables.Wpf
 
                 SystemSounds.Exclamation.Play();
 
-                var result = MessageBox.Show($"Je score was {score} - wil je nog eens proberen?", "Gedaan!", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                //var result = MessageBox.Show($"Je score was {score} - wil je nog eens proberen?", "Gedaan!", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var popup = new CustomMessageBox($"Je score was {score} - wil je nog eens proberen?");
+                popup.ShowDialog();
 
-                if (result == MessageBoxResult.Yes)
+                if (popup.Result)
                 {
                     btnStart.Visibility = Visibility.Visible;
                     btnStart.Focus();
@@ -113,10 +115,13 @@ namespace Tables.Wpf
                     if (userAnswer == answer)
                     {
                         score++;
-                        lblQuestion.Background = Brushes.Green;
-                        btnNext.IsEnabled = true;
                         txtAnswer.Clear();
-                        btnNext.Focus();
+                        tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
+                        ? options[rng.Next(0, options.Length)]
+                        : (int)cmbSelection.SelectedItem;
+
+                        GenerateQuestion(tableNumber);
+                        lblQuestion.Background = Brushes.Transparent;
                     }
                     else
                     {
@@ -160,16 +165,6 @@ namespace Tables.Wpf
             GenerateQuestion(tableNumber);
             lblQuestion.Background = Brushes.Transparent;
             Clear();
-        }
-
-        private void BtnNext_Click(object sender, RoutedEventArgs e)
-        {
-            tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
-                ? options[rng.Next(0, options.Length)]
-                : (int)cmbSelection.SelectedItem;
-
-            GenerateQuestion(tableNumber);
-            lblQuestion.Background = Brushes.Transparent;
         }
 
         #endregion
@@ -219,7 +214,6 @@ namespace Tables.Wpf
 
             lblQuestion.Background = Brushes.Transparent;
             Clear();
-            btnNext.IsEnabled = false;
         }
 
         private void Clear()
