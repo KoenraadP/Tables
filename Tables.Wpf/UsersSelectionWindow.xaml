@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:Tables.Wpf"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="UsersSelectionWindow" Height="189" Width="135" Loaded="Window_Loaded">
+        Title="UsersSelectionWindow" Height="250" Width="260" Loaded="Window_Loaded">
     <Grid>
-        <ListBox x:Name="lstUsers" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,0,86"/>
-        <Button x:Name="btnSelectUser" Content="Dit ben ik!" HorizontalAlignment="Center" Margin="0,117,0,0" VerticalAlignment="Top" Width="135" Click="btnSelectUser_Click"/>
+        <ListBox x:Name="lstUsers" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,0,58" FontSize="24"/>
+        <Button x:Name="btnSelectUser" Content="Dit ben ik!" HorizontalAlignment="Center" Margin="0,136,0,0" VerticalAlignment="Top" Width="260" Click="btnSelectUser_Click" FontSize="24"/>
 
     </Grid>
 </Window>

@@ -13,48 +13,81 @@ namespace Tables.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region globals
+
         private readonly Random rng = new();
         private int answer;
         private int tableNumber;
-        private int[] options;
+        private int[]? options;
         private int score;
         private readonly DispatcherTimer timer;
         private TimeSpan elapsedTime;
         private string user;
         private int highScore;
 
+        #endregion
+
+        #region constructor
+
         public MainWindow(string selectedUser)
         {
             InitializeComponent();
-
             user = selectedUser;
-
             timer = new DispatcherTimer();
+        }
+
+        #endregion
+
+        #region events
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {   
+            // timer settings
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
 
-            txtAnswer.IsEnabled = false;
-            btnStart.Focus();
+            // add options to combobox
+            Seed();
 
-            tbkTimer.Visibility = Visibility.Hidden;            
+            // no entries until exercise starts
+            txtAnswer.IsEnabled = false;
+            txtAnswer.Visibility = Visibility.Hidden;
+
+            // select start button so exercise can be started as soon as enter is hit
+            btnStart.Focus();          
+
+            // show greeting on load
+            lblQuestion.Content = $"Dag {user} !";
+
+            // load highscore for user
+            LoadHighScore();
+
+            // hide last score info at start
+            lblLastScoreTitle.Visibility = Visibility.Hidden;
+            lblLastScore.Visibility = Visibility.Hidden;
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            CheckScore(score);
-
+        private void Timer_Tick(object? sender, EventArgs e)
+        {                     
             elapsedTime = elapsedTime.Add(TimeSpan.FromSeconds(1));
-            tbkTimer.Text = elapsedTime.ToString(@"hh\:mm\:ss");
 
+            // default setting: one minute to provide as many answers as possible
             if (elapsedTime.TotalSeconds == 60)
             {
+                // update highscore if score > highscore
+                CheckScore(score);
+
+                lblLastScore.Visibility = Visibility.Visible;
+                lblLastScoreTitle.Visibility = Visibility.Visible;
+                lblLastScore.Content = score;
+
                 timer.Stop();
                 txtAnswer.Clear();
                 txtAnswer.IsEnabled = false;
                 lblQuestion.Visibility = Visibility.Hidden;
 
                 SystemSounds.Exclamation.Play();
-                lblScore.Visibility = Visibility.Visible;
+
                 var result = MessageBox.Show($"Je score was {score} - wil je nog eens proberen?", "Gedaan!", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (result == MessageBoxResult.Yes)
@@ -68,27 +101,7 @@ namespace Tables.Wpf
                     Close();
                 }
             }
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            
-            cmbSelection.Items.Add("Alles");
-            options = new int[]{ 2, 4, 5, 8, 10 };
-            foreach (int option in options)
-            {
-                cmbSelection.Items.Add(option);
-            }
-
-            cmbSelection.SelectedIndex = 0;
-            lblScore.Visibility = Visibility.Hidden;
-            txtAnswer.Visibility = Visibility.Hidden;
-            lblQuestion.Content = $"Dag {user} !";
-
-            highScore = ReadScore();
-
-            lblHighScore.Content = highScore;
-        }
+        }                
 
         private void TxtAnswer_KeyDown(object sender, KeyEventArgs e)
         {
@@ -100,7 +113,6 @@ namespace Tables.Wpf
                     if (userAnswer == answer)
                     {
                         score++;
-                        lblScore.Content = $"Score: {score}";
                         lblQuestion.Background = Brushes.Green;
                         btnNext.IsEnabled = true;
                         txtAnswer.Clear();
@@ -132,19 +144,54 @@ namespace Tables.Wpf
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
+            // reset values
             score = 0;
             elapsedTime = TimeSpan.Zero;
+
+            // start timer
             timer.Start();
+
             btnStart.Visibility = Visibility.Hidden;
             txtAnswer.Visibility = Visibility.Visible;
             lblQuestion.Visibility = Visibility.Visible;
-            lblScore.Visibility = Visibility.Hidden;
             txtAnswer.IsEnabled = true;
             txtAnswer.Focus();
 
             GenerateQuestion(tableNumber);
             lblQuestion.Background = Brushes.Transparent;
             Clear();
+        }
+
+        private void BtnNext_Click(object sender, RoutedEventArgs e)
+        {
+            tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
+                ? options[rng.Next(0, options.Length)]
+                : (int)cmbSelection.SelectedItem;
+
+            GenerateQuestion(tableNumber);
+            lblQuestion.Background = Brushes.Transparent;
+        }
+
+        #endregion
+
+        #region methods
+
+        private void Seed()
+        {
+            cmbSelection.Items.Add("Alles");
+            options = new int[] { 2, 4, 5, 8, 10 };
+            foreach (int option in options)
+            {
+                cmbSelection.Items.Add(option);
+            }
+
+            cmbSelection.SelectedIndex = 0;
+        }
+
+        private void LoadHighScore()
+        {
+            highScore = ReadScore();
+            lblHighScore.Content = highScore;
         }
 
         private void GenerateQuestion(int tableNumber)
@@ -179,17 +226,7 @@ namespace Tables.Wpf
         {            
             txtAnswer.Clear();
             txtAnswer.Focus();
-        }
-
-        private void BtnNext_Click(object sender, RoutedEventArgs e)
-        {
-            tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
-                ? options[rng.Next(0, options.Length)]
-                : (int)cmbSelection.SelectedItem;
-
-            GenerateQuestion(tableNumber);
-            lblQuestion.Background = Brushes.Transparent;
-        }
+        }        
 
         private int ReadScore()
         {
@@ -225,5 +262,7 @@ namespace Tables.Wpf
                 WriteScore();
             }
         }
+
+        #endregion
     }
 }

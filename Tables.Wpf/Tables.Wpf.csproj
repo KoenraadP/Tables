@@ -8,4 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="bin\Debug\net6.0-windows\highscores\Papa.score" />
+    <None Include="bin\Debug\net6.0-windows\highscores\Warre.score" />
+  </ItemGroup>
+
 </Project>

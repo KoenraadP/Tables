@@ -6,17 +6,17 @@
         xmlns:local="clr-namespace:Tables.Wpf"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Tafels" Height="382" Width="564" Loaded="Window_Loaded" ResizeMode="NoResize">
+        Title="Tafels" Height="382" Width="564" Loaded="Window_Loaded">
     <Grid>
         <Label x:Name="lblQuestion" Content="0 : 0" HorizontalAlignment="Center" Margin="0,47,0,0" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="112" Width="392" FontSize="72"/>
         <TextBox HorizontalContentAlignment="Center" x:Name="txtAnswer" HorizontalAlignment="Center" Margin="0,159,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="308" FontSize="72" KeyDown="TxtAnswer_KeyDown"/>
         <ComboBox x:Name="cmbSelection" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="544" SelectionChanged="CmbSelection_SelectionChanged"/>
         <Button x:Name="btnNext" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="Volgende" HorizontalAlignment="Center" Margin="0,276,0,0" VerticalAlignment="Top" Width="308" Height="50" FontSize="24" IsEnabled="False" Click="BtnNext_Click"/>
-        <TextBlock x:Name="tbkTimer" HorizontalAlignment="Left" Margin="10,310,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,47,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.858,-6.427" Height="40" Width="89" Click="BtnStart_Click"/>
-        <Label x:Name="lblScore" Content="Punten: " HorizontalAlignment="Left" Margin="467,47,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblScoreTitle" Content="Topscore" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblHighScore" Content="" HorizontalAlignment="Left" Margin="17,134,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,276,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.858,-6.427" Height="49" Width="89" Click="BtnStart_Click"/>
+        <Label x:Name="lblScoreTitle" Content="Topscore" HorizontalAlignment="Left" Margin="12,46,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label x:Name="lblHighScore" Content="topscore" HorizontalAlignment="Left" Margin="12,72,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblLastScoreTitle" Content="Laatste score" HorizontalAlignment="Left" Margin="12,98,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label x:Name="lblLastScore" Content="topscore" HorizontalAlignment="Left" Margin="12,124,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
