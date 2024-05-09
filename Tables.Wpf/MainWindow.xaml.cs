@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Media;
+using System.Printing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,14 +17,21 @@ namespace Tables.Wpf
         #region globals
 
         private readonly Random rng = new();
+
         private int answer;
         private int tableNumber;
-        private int[]? options;
-        private int score;
+        private string? selectedExercise;
+        private int[]? options;        
+
         private readonly DispatcherTimer timer;
         private TimeSpan elapsedTime;
+
         private string user;
+
+        private int score;
         private int highScore;
+        private string[]? allHighScores;
+        private string? highScorePath;        
 
         #endregion
 
@@ -59,7 +67,18 @@ namespace Tables.Wpf
             // show greeting on load
             lblQuestion.Content = $"Dag {user} !";
 
-            // load highscore for user
+            // load highscore for user (for "alles")
+            string highScoreDir = Environment.CurrentDirectory + @"\highscores\";
+            string userScoreFile = $"{user}.score";
+            highScorePath = Path.Combine(highScoreDir, userScoreFile);
+
+            // make a new high score file if one doesn't exist yet
+            if (!File.Exists(highScorePath))
+            {
+                CreateScoreFile();
+            }
+
+            allHighScores = ReadHighScores();
             LoadHighScore();
 
             // hide last score info at start
@@ -112,12 +131,13 @@ namespace Tables.Wpf
                 try
                 {
                     int userAnswer = int.Parse(txtAnswer.Text);
-                    if (userAnswer == answer)
+                    if (userAnswer == answer && options != null)
                     {
                         score++;
                         txtAnswer.Clear();
+                        // filter out 10 voor "Alles" --> too easy
                         tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
-                        ? options[rng.Next(0, options.Length)]
+                        ? options[rng.Next(0, options.Length-1)]
                         : (int)cmbSelection.SelectedItem;
 
                         GenerateQuestion(tableNumber);
@@ -137,14 +157,21 @@ namespace Tables.Wpf
         }
 
         private void CmbSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        {           
+            if (options != null)
+            {
+                // filter out 10 for "Alles" --> too easy
                 tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
-                ? options[rng.Next(0, options.Length)]
-                : (int) cmbSelection.SelectedItem;
+                ? options[rng.Next(0, options.Length-1)]
+                : (int)cmbSelection.SelectedItem;
+
+                // load high score for selected table
+                LoadHighScore();
 
                 GenerateQuestion(tableNumber);
                 lblQuestion.Background = Brushes.Transparent;
-                Clear();       
+                Clear();
+            }  
         }
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
@@ -184,25 +211,63 @@ namespace Tables.Wpf
         }
 
         private void LoadHighScore()
-        {
-            highScore = ReadScore();
-            lblHighScore.Content = highScore;
+        {            
+            selectedExercise = cmbSelection.SelectedItem.ToString();
+            string tableHighScore = "0";
+
+            if (allHighScores != null)
+            {
+                // select high score for current table number
+                foreach (var item in allHighScores)
+                {
+                    string[] itemSplit = item.Split(';');
+
+                    for (int i = 0; i < itemSplit.Length-1; i++)
+                    {
+                        if (itemSplit[i] == selectedExercise)
+                        {
+                            tableHighScore = itemSplit[1];
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(tableHighScore))
+                    {
+                        tableHighScore = itemSplit[itemSplit.Length-1];
+                    }
+                }
+            }
+
+            highScore = int.Parse(tableHighScore);
+            lblHighScore.Content = tableHighScore;
         }
 
         private void GenerateQuestion(int tableNumber)
         {
+            // flip a coin for multiplication/division
             int decision = rng.Next(0, 2);
-            int randomNr = rng.Next(2, 11);
+
+            int randomNr;
+
+            // if "alles" --> filter out 10, too easy
+            if (selectedExercise == "Alles")
+            {
+                randomNr = rng.Next(2, 10);
+            }
+            else
+            {
+                randomNr = rng.Next(2, 11);
+            }
 
             if (decision == 0)
             {
-                // multiplication                
+                // multiplication
                 answer = tableNumber * randomNr;                
                 lblQuestion.Content = $"{randomNr} X {tableNumber}";
             }
             else
             {
                 // division
+                // filter out 1 as the answer --> too easy
                 while (randomNr == tableNumber)
                 {
                     randomNr = rng.Next(2, 11);
@@ -216,45 +281,84 @@ namespace Tables.Wpf
             Clear();
         }
 
+        // empty input and put focus on it
         private void Clear()
         {            
             txtAnswer.Clear();
             txtAnswer.Focus();
         }        
 
-        private int ReadScore()
+        // read high scores from file
+        private string[]? ReadHighScores()
         {
-            string path = Environment.CurrentDirectory + @"\highscores\";
-            string fileName = $"{user}.score";
-
-            string fullPath = Path.Combine(path, fileName);
-
-            if (File.Exists(fullPath))
+            if (highScorePath != null)
             {
-                highScore = int.Parse(File.ReadAllText(fullPath));
-                return highScore;
+                allHighScores = File.ReadAllLines(highScorePath);
+                return allHighScores;
             }
 
-            return 0;
+            return null;
         }
 
-        private void WriteScore()
+        // write new high score to file
+        private void WriteHighScores()
         {
-            string path = Environment.CurrentDirectory + @"\highscores\";
-            string fileName = $"{user}.score";
-
-            string fullPath = Path.Combine(path, fileName);
-
-            File.WriteAllText(fullPath, highScore.ToString());
+            if (highScorePath != null && allHighScores != null) 
+            {
+                File.WriteAllLines(highScorePath, allHighScores);
+            }            
         }
 
+        // check if last score is a new high score
         private void CheckScore(int score)
         {
             if (score > highScore)
             {
                 highScore = score;
-                WriteScore();
+                EditHighScore();
+                WriteHighScores();
             }
+        }
+
+        // change highscore entry for current table
+        private void EditHighScore()
+        {
+            if (allHighScores != null)
+            {
+                for (int i = 0; i < allHighScores.Length - 1; i++)
+                {
+                    string[] itemSplit = allHighScores[i].Split(';');
+                    if (itemSplit[0] == selectedExercise)
+                    {
+                        allHighScores[i] = $"{selectedExercise};{highScore}";
+                    }
+                }
+
+                if (selectedExercise == "Alles")
+                {
+                    allHighScores[allHighScores.Length - 1] = $"{selectedExercise};{highScore}";
+                }
+            }
+        }
+
+        // make a new high score file if it doesn't exist yet
+        private void CreateScoreFile()
+        {            
+            if (options != null)
+            {
+                int arraySize = options.Length + 1;
+
+                allHighScores = new string[arraySize];
+
+                for (int i = 0; i < arraySize - 1; i++)
+                {
+                    allHighScores[i] = options[i] + ";0";
+                }
+
+                allHighScores[arraySize - 1] = "Alles;0";
+
+                WriteHighScores();
+            }            
         }
 
         #endregion
