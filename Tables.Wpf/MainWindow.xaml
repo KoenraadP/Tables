@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Tables.Wpf"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Tafels" Height="319" Width="500" Loaded="Window_Loaded">
+        Title="Tafels" Height="319" Width="500" Loaded="Window_Loaded" ResizeMode="NoResize">
     <Grid Margin="0,0,0,1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="457*"/>
