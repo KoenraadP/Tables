@@ -145,7 +145,7 @@ namespace Tables.Wpf
                     }
                     else
                     {
-                        lblQuestion.Background = Brushes.Red;
+                        lblQuestion.Background = Brushes.Pink;
                         Clear();
                     }
                 }
@@ -168,7 +168,6 @@ namespace Tables.Wpf
                 // load high score for selected table
                 LoadHighScore();
 
-                GenerateQuestion(tableNumber);
                 lblQuestion.Background = Brushes.Transparent;
                 Clear();
             }  
