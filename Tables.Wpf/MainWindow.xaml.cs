@@ -72,11 +72,11 @@ namespace Tables.Wpf
             string userScoreFile = $"{user}.score";
             highScorePath = Path.Combine(highScoreDir, userScoreFile);
 
-            // make a new high score file if one doesn't exist yet
-            if (!File.Exists(highScorePath))
-            {
-                CreateScoreFile();
-            }
+                // make a new high score file if one doesn't exist yet
+                if (!File.Exists(highScorePath))
+                {
+                    CreateScoreFile();
+                }
 
             allHighScores = ReadHighScores();
             LoadHighScore();
@@ -93,24 +93,31 @@ namespace Tables.Wpf
             // default setting: one minute to provide as many answers as possible
             if (elapsedTime.TotalSeconds == 60)
             {
+                timer.Stop();
+
+                // play sound to alert user
+                SystemSounds.Exclamation.Play();
+
                 // update highscore if score > highscore
                 CheckScore(score);
 
+                // show score of last attempt
                 lblLastScore.Visibility = Visibility.Visible;
                 lblLastScoreTitle.Visibility = Visibility.Visible;
                 lblLastScore.Content = score;
 
-                timer.Stop();
+                // disable input 
                 txtAnswer.Clear();
                 txtAnswer.IsEnabled = false;
-                lblQuestion.Visibility = Visibility.Hidden;
 
-                SystemSounds.Exclamation.Play();
+                // hide question
+                lblQuestion.Visibility = Visibility.Hidden;                
 
-                //var result = MessageBox.Show($"Je score was {score} - wil je nog eens proberen?", "Gedaan!", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                // popup to let user opt to go again or quit
                 var popup = new CustomMessageBox($"Je score was {score} - wil je nog eens proberen?");
                 popup.ShowDialog();
 
+                // if user clicks yes to go again
                 if (popup.Result)
                 {
                     btnStart.Visibility = Visibility.Visible;
@@ -126,6 +133,7 @@ namespace Tables.Wpf
 
         private void TxtAnswer_KeyDown(object sender, KeyEventArgs e)
         {
+            // user input with enter key
             if (e.Key == Key.Enter && !string.IsNullOrEmpty(txtAnswer.Text))
             {
                 try
@@ -149,9 +157,9 @@ namespace Tables.Wpf
                         Clear();
                     }
                 }
-                catch
+                catch (Exception ex) 
                 {
-
+                    MessageBox.Show(ex.Message);
                 }                            
             }
         }
