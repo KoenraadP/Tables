@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Media;
 using System.Printing;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -129,7 +130,13 @@ namespace Tables.Wpf
                     Close();
                 }
             }
-        }                
+        }
+
+        // allow only numbers to be entered
+        private void TxtAnswer_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !TextAllowed(e.Text);
+        }
 
         private void TxtAnswer_KeyDown(object sender, KeyEventArgs e)
         {
@@ -138,7 +145,8 @@ namespace Tables.Wpf
             {
                 try
                 {
-                    int userAnswer = int.Parse(txtAnswer.Text);
+                    // convert entered text to int and remove spaces
+                    int userAnswer = int.Parse(txtAnswer.Text.Trim());
                     if (userAnswer == answer && options != null)
                     {
                         score++;
@@ -366,6 +374,13 @@ namespace Tables.Wpf
 
                 WriteHighScores();
             }            
+        }
+
+        private bool TextAllowed(string text)
+        {
+            // use a regular expression to match only digits
+            Regex regex = new Regex("[^0-9]+");
+            return !regex.IsMatch(text);
         }
 
         #endregion
