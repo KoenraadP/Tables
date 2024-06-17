@@ -23,5 +23,10 @@ namespace Tables.Wpf
         {
             InitializeComponent();
         }
+
+        private void SaveSettings_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
