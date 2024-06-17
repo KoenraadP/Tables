@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Media;
 using System.Printing;
 using System.Text.RegularExpressions;
@@ -32,7 +33,10 @@ namespace Tables.Wpf
         private int score;
         private int highScore;
         private string[]? allHighScores;
-        private string? highScorePath;        
+        private string? highScorePath;
+
+        // list to keep track of questions that have already appeared
+        private List<string> _usedQuestions;
 
         #endregion
 
@@ -51,6 +55,9 @@ namespace Tables.Wpf
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {   
+            // initialise _usedQuestions
+            _usedQuestions = new List<string>();
+            
             // timer settings
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
@@ -194,6 +201,7 @@ namespace Tables.Wpf
             // reset values
             score = 0;
             elapsedTime = TimeSpan.Zero;
+            _usedQuestions.Clear();
 
             // start timer
             timer.Start();
@@ -262,38 +270,56 @@ namespace Tables.Wpf
             int decision = rng.Next(0, 2);
 
             int randomNr;
+            string question;
 
-            // if "alles" --> filter out 10, too easy
-            if (selectedExercise == "Alles")
-            {
-                randomNr = rng.Next(2, 10);
-            }
-            else
-            {
-                randomNr = rng.Next(2, 11);
-            }
+            // generate random number for question
+            randomNr = GenerateRandom();
 
             if (decision == 0)
             {
                 // multiplication
-                answer = tableNumber * randomNr;                
-                lblQuestion.Content = $"{randomNr} X {tableNumber}";
+                question = $"{randomNr} X {tableNumber}";
+                // ensure no repeat questions
+                while (_usedQuestions.Contains(question))
+                {
+                    randomNr = GenerateRandom();                    
+                    question = $"{randomNr} X {tableNumber}";
+                }
+                answer = tableNumber * randomNr;
+                lblQuestion.Content = question;
             }
             else
             {
                 // division
-                // filter out 1 as the answer --> too easy
-                while (randomNr == tableNumber)
+                question = $"{randomNr*tableNumber} : {tableNumber}";
+                // ensure no repeat questions
+                while (_usedQuestions.Contains(question))
                 {
-                    randomNr = rng.Next(2, 11);
+                    randomNr = GenerateRandom();
+                    question = $"{randomNr*tableNumber} : {tableNumber}";
                 }
-
-                answer = randomNr;
-                lblQuestion.Content = $"{randomNr*tableNumber} : {tableNumber}";
+                answer = randomNr;                
+                lblQuestion.Content = question;
             }
+
+            _usedQuestions.Add(question);
 
             lblQuestion.Background = Brushes.Transparent;
             Clear();
+        }
+
+        // generate random number for exercises
+        // if not training mode, filter out numbers that are too easy
+        private int GenerateRandom()
+        {
+            if (selectedExercise == "Alles")
+            {
+                return rng.Next(2, 10);
+            }
+            else
+            {
+                return rng.Next(2, 11);
+            }
         }
 
         // empty input and put focus on it
