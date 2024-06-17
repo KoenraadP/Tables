@@ -11,6 +11,8 @@
   <ItemGroup>
     <None Include="bin\Debug\net6.0-windows\highscores\Papa.score" />
     <None Include="bin\Debug\net6.0-windows\highscores\Warre.score" />
+    <None Include="bin\Debug\net6.0-windows\settings.cfg" />
+    <None Include="bin\Debug\net6.0-windows\users.cfg" />
   </ItemGroup>
 
 </Project>
