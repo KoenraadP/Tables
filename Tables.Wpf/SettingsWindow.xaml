@@ -5,26 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tables.Wpf"
         mc:Ignorable="d"
-        Title="Instellingen" Height="419" Width="400">
+        Title="Instellingen" Height="419" Width="400" Loaded="Window_Loaded">
     <Grid>
         <StackPanel>
             <TextBlock Text="Kies tafels" Margin="10" />
-            <CheckBox Name="Table2" Content="2" Margin="10" IsChecked="True" />
-            <CheckBox Name="Table3" Content="3" Margin="10" IsChecked="True" />
-            <CheckBox Name="Table4" Content="4" Margin="10" IsChecked="True" />
-            <CheckBox Name="Table5" Content="5" Margin="10" IsChecked="True" />
-            <CheckBox Name="Table6" Content="6" Margin="10" IsChecked="True" />
-            <CheckBox Name="Table7" Content="7" Margin="10" IsChecked="True" />
-            <CheckBox Name="Table8" Content="8" Margin="10" IsChecked="True" />
-            <CheckBox Name="Table9" Content="9" Margin="10" IsChecked="True" />
-            <CheckBox Name="Table10" Content="10" Margin="10" IsChecked="True" />
-            <!-- Add more CheckBoxes for other tables -->
-
+            <ComboBox x:Name="cmbExerciseOptions" Width="120" SelectionChanged="CmbExerciseOptions_SelectionChanged"/>
+            <Button Content="Save" Width="100" Height="30" Click="SaveSettings_Click" Margin="0,20,0,0"/>
+            
             <!--<TextBlock Text="Operations:" Margin="10,20,10,10" />
             <CheckBox Name="MultiplicationCheckBox" Content="Enable Multiplication" IsChecked="True" Margin="10" />
             <CheckBox Name="DivisionCheckBox" Content="Enable Division" IsChecked="True" Margin="10" />-->
-
-            <Button Content="Save" Width="100" Height="30" Margin="10" Click="SaveSettings_Click"/>
         </StackPanel>
     </Grid>
 </Window>

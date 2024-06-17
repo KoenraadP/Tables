@@ -36,7 +36,10 @@ namespace Tables.Wpf
         private string? _highScorePath;
 
         // list to keep track of questions that have already appeared
-        private List<string> _usedQuestions;
+        private List<string>? _usedQuestions;
+
+        // bool to check whether all tables were selected
+        private bool _allTables;
 
         #endregion
 
@@ -62,8 +65,11 @@ namespace Tables.Wpf
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
 
-            // add options to combobox
+            // add exercise options
             Seed();
+
+            // read and use settings
+            Settings();
 
             // no entries until exercise starts
             txtAnswer.IsEnabled = false;
@@ -159,9 +165,9 @@ namespace Tables.Wpf
                         _score++;
                         txtAnswer.Clear();
                         // filter out 10 voor "Alles" --> too easy
-                        _tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
+                        _tableNumber = _selectedExercise == "Alles"
                         ? _options[_rng.Next(0, _options.Length-1)]
-                        : (int)cmbSelection.SelectedItem;
+                        : int.Parse(_selectedExercise);
 
                         GenerateQuestion(_tableNumber);
                         lblQuestion.Background = Brushes.Transparent;
@@ -179,21 +185,21 @@ namespace Tables.Wpf
             }
         }
 
-        private void CmbSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {           
+        private void FirstQuestion()
+        {
             if (_options != null)
             {
                 // filter out 10 for "Alles" --> too easy
-                _tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
-                ? _options[_rng.Next(0, _options.Length-1)]
-                : (int)cmbSelection.SelectedItem;
+                _tableNumber = _selectedExercise == "Alles"
+                ? _options[_rng.Next(0, _options.Length - 1)]
+                : int.Parse(_selectedExercise);
 
                 // load high score for selected table
                 LoadHighScore();
 
                 lblQuestion.Background = Brushes.Transparent;
                 Clear();
-            }  
+            }
         }
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
@@ -201,7 +207,7 @@ namespace Tables.Wpf
             // reset values
             _score = 0;
             _elapsedTime = TimeSpan.Zero;
-            _usedQuestions.Clear();
+            _usedQuestions?.Clear();
 
             // start timer
             _timer.Start();
@@ -212,9 +218,17 @@ namespace Tables.Wpf
             txtAnswer.IsEnabled = true;
             txtAnswer.Focus();
 
+            FirstQuestion();
             GenerateQuestion(_tableNumber);
             lblQuestion.Background = Brushes.Transparent;
             Clear();
+        }
+
+        // open settings window
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow settingsWindow = new SettingsWindow();
+            settingsWindow.ShowDialog();
         }
 
         #endregion
@@ -223,19 +237,25 @@ namespace Tables.Wpf
 
         private void Seed()
         {
-            cmbSelection.Items.Add("Alles");
             _options = new int[] { 2, 3, 4, 5, 6, 8, 9, 10 };
-            foreach (int option in _options)
-            {
-                cmbSelection.Items.Add(option);
-            }
+        }
 
-            cmbSelection.SelectedIndex = 0;
+        private void Settings()
+        {
+            // read settings file
+            string directory = Environment.CurrentDirectory;
+            string fileName = "settings.cfg";
+            string settingsFile = Path.Combine(directory, fileName);
+            string[] settings = File.ReadAllLines(settingsFile);
+
+            // first line in settings = table number
+            _selectedExercise = settings[0];            
+
+            // future setting --> timer length
         }
 
         private void LoadHighScore()
         {            
-            _selectedExercise = cmbSelection.SelectedItem.ToString();
             string tableHighScore = "0";
 
             if (_allHighScores != null)
@@ -280,7 +300,7 @@ namespace Tables.Wpf
                 // multiplication
                 question = $"{randomNr} X {tableNumber}";
                 // ensure no repeat questions
-                while (_usedQuestions.Contains(question))
+                while (_usedQuestions != null && _usedQuestions.Contains(question))
                 {
                     randomNr = GenerateRandom();                    
                     question = $"{randomNr} X {tableNumber}";
@@ -293,7 +313,7 @@ namespace Tables.Wpf
                 // division
                 question = $"{randomNr*tableNumber} : {tableNumber}";
                 // ensure no repeat questions
-                while (_usedQuestions.Contains(question))
+                while (_usedQuestions != null && _usedQuestions.Contains(question))
                 {
                     randomNr = GenerateRandom();
                     question = $"{randomNr*tableNumber} : {tableNumber}";
@@ -302,7 +322,7 @@ namespace Tables.Wpf
                 lblQuestion.Content = question;
             }
 
-            _usedQuestions.Add(question);
+            _usedQuestions?.Add(question);
 
             lblQuestion.Background = Brushes.Transparent;
             Clear();
@@ -409,6 +429,6 @@ namespace Tables.Wpf
             return !regex.IsMatch(text);
         }
 
-        #endregion
+        #endregion        
     }
 }
