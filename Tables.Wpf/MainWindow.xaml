@@ -13,7 +13,7 @@
             <ColumnDefinition Width="43*"/>
         </Grid.ColumnDefinitions>
         <Label x:Name="lblQuestion" Content="0 : 0" HorizontalAlignment="Left" Margin="114,46,0,0" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="112" Width="357" FontSize="72" Grid.ColumnSpan="2"/>
-        <TextBox HorizontalContentAlignment="Center" x:Name="txtAnswer" HorizontalAlignment="Left" Margin="114,159,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="357" FontSize="72" KeyDown="TxtAnswer_KeyDown" Grid.ColumnSpan="2"/>
+        <TextBox HorizontalContentAlignment="Center" x:Name="txtAnswer" HorizontalAlignment="Left" Margin="114,159,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="357" FontSize="72" KeyDown="TxtAnswer_KeyDown" Grid.ColumnSpan="2" PreviewTextInput="TxtAnswer_PreviewTextInput" MaxLength="3"/>
         <ComboBox x:Name="cmbSelection" HorizontalAlignment="Left" Margin="12,10,0,0" VerticalAlignment="Top" Width="459" SelectionChanged="CmbSelection_SelectionChanged" IsSynchronizedWithCurrentItem="True" Grid.ColumnSpan="2"/>
         <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,208,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.858,-6.427" Height="49" Width="89" Click="BtnStart_Click"/>
         <Label x:Name="lblScoreTitle" Content="Topscore" HorizontalAlignment="Left" Margin="12,46,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
