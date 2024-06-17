@@ -18,22 +18,22 @@ namespace Tables.Wpf
     {
         #region globals
 
-        private readonly Random rng = new();
+        private readonly Random _rng = new();
 
-        private int answer;
-        private int tableNumber;
-        private string? selectedExercise;
-        private int[]? options;        
+        private int _answer;
+        private int _tableNumber;
+        private string? _selectedExercise;
+        private int[]? _options;        
 
-        private readonly DispatcherTimer timer;
-        private TimeSpan elapsedTime;
+        private readonly DispatcherTimer _timer;
+        private TimeSpan _elapsedTime;
 
-        private string user;
+        private string _user;
 
-        private int score;
-        private int highScore;
-        private string[]? allHighScores;
-        private string? highScorePath;
+        private int _score;
+        private int _highScore;
+        private string[]? _allHighScores;
+        private string? _highScorePath;
 
         // list to keep track of questions that have already appeared
         private List<string> _usedQuestions;
@@ -45,8 +45,8 @@ namespace Tables.Wpf
         public MainWindow(string selectedUser)
         {
             InitializeComponent();
-            user = selectedUser;
-            timer = new DispatcherTimer();
+            _user = selectedUser;
+            _timer = new DispatcherTimer();
         }
 
         #endregion
@@ -59,8 +59,8 @@ namespace Tables.Wpf
             _usedQuestions = new List<string>();
             
             // timer settings
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += Timer_Tick;
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += Timer_Tick;
 
             // add options to combobox
             Seed();
@@ -73,20 +73,20 @@ namespace Tables.Wpf
             btnStart.Focus();          
 
             // show greeting on load
-            lblQuestion.Content = $"Dag {user} !";
+            lblQuestion.Content = $"Dag {_user} !";
 
             // load highscore for user (for "alles")
             string highScoreDir = Environment.CurrentDirectory + @"\highscores\";
-            string userScoreFile = $"{user}.score";
-            highScorePath = Path.Combine(highScoreDir, userScoreFile);
+            string userScoreFile = $"{_user}.score";
+            _highScorePath = Path.Combine(highScoreDir, userScoreFile);
 
                 // make a new high score file if one doesn't exist yet
-                if (!File.Exists(highScorePath))
+                if (!File.Exists(_highScorePath))
                 {
                     CreateScoreFile();
                 }
 
-            allHighScores = ReadHighScores();
+            _allHighScores = ReadHighScores();
             LoadHighScore();
 
             // hide last score info at start
@@ -96,23 +96,23 @@ namespace Tables.Wpf
 
         private void Timer_Tick(object? sender, EventArgs e)
         {                     
-            elapsedTime = elapsedTime.Add(TimeSpan.FromSeconds(1));
+            _elapsedTime = _elapsedTime.Add(TimeSpan.FromSeconds(1));
 
             // default setting: one minute to provide as many answers as possible
-            if (elapsedTime.TotalSeconds == 60)
+            if (_elapsedTime.TotalSeconds == 60)
             {
-                timer.Stop();
+                _timer.Stop();
 
                 // play sound to alert user
                 SystemSounds.Exclamation.Play();
 
                 // update highscore if score > highscore
-                CheckScore(score);
+                CheckScore(_score);
 
                 // show score of last attempt
                 lblLastScore.Visibility = Visibility.Visible;
                 lblLastScoreTitle.Visibility = Visibility.Visible;
-                lblLastScore.Content = score;
+                lblLastScore.Content = _score;
 
                 // disable input 
                 txtAnswer.Clear();
@@ -122,7 +122,7 @@ namespace Tables.Wpf
                 lblQuestion.Visibility = Visibility.Hidden;                
 
                 // popup to let user opt to go again or quit
-                var popup = new CustomMessageBox($"Je score was {score} - wil je nog eens proberen?");
+                var popup = new CustomMessageBox($"Je score was {_score} - wil je nog eens proberen?");
                 popup.ShowDialog();
 
                 // if user clicks yes to go again
@@ -154,16 +154,16 @@ namespace Tables.Wpf
                 {
                     // convert entered text to int and remove spaces
                     int userAnswer = int.Parse(txtAnswer.Text.Trim());
-                    if (userAnswer == answer && options != null)
+                    if (userAnswer == _answer && _options != null)
                     {
-                        score++;
+                        _score++;
                         txtAnswer.Clear();
                         // filter out 10 voor "Alles" --> too easy
-                        tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
-                        ? options[rng.Next(0, options.Length-1)]
+                        _tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
+                        ? _options[_rng.Next(0, _options.Length-1)]
                         : (int)cmbSelection.SelectedItem;
 
-                        GenerateQuestion(tableNumber);
+                        GenerateQuestion(_tableNumber);
                         lblQuestion.Background = Brushes.Transparent;
                     }
                     else
@@ -181,11 +181,11 @@ namespace Tables.Wpf
 
         private void CmbSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {           
-            if (options != null)
+            if (_options != null)
             {
                 // filter out 10 for "Alles" --> too easy
-                tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
-                ? options[rng.Next(0, options.Length-1)]
+                _tableNumber = cmbSelection.SelectedItem.ToString() == "Alles"
+                ? _options[_rng.Next(0, _options.Length-1)]
                 : (int)cmbSelection.SelectedItem;
 
                 // load high score for selected table
@@ -199,12 +199,12 @@ namespace Tables.Wpf
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
             // reset values
-            score = 0;
-            elapsedTime = TimeSpan.Zero;
+            _score = 0;
+            _elapsedTime = TimeSpan.Zero;
             _usedQuestions.Clear();
 
             // start timer
-            timer.Start();
+            _timer.Start();
 
             btnStart.Visibility = Visibility.Hidden;
             txtAnswer.Visibility = Visibility.Visible;
@@ -212,7 +212,7 @@ namespace Tables.Wpf
             txtAnswer.IsEnabled = true;
             txtAnswer.Focus();
 
-            GenerateQuestion(tableNumber);
+            GenerateQuestion(_tableNumber);
             lblQuestion.Background = Brushes.Transparent;
             Clear();
         }
@@ -224,8 +224,8 @@ namespace Tables.Wpf
         private void Seed()
         {
             cmbSelection.Items.Add("Alles");
-            options = new int[] { 2, 3, 4, 5, 6, 8, 9, 10 };
-            foreach (int option in options)
+            _options = new int[] { 2, 3, 4, 5, 6, 8, 9, 10 };
+            foreach (int option in _options)
             {
                 cmbSelection.Items.Add(option);
             }
@@ -235,19 +235,19 @@ namespace Tables.Wpf
 
         private void LoadHighScore()
         {            
-            selectedExercise = cmbSelection.SelectedItem.ToString();
+            _selectedExercise = cmbSelection.SelectedItem.ToString();
             string tableHighScore = "0";
 
-            if (allHighScores != null)
+            if (_allHighScores != null)
             {
                 // select high score for current table number
-                foreach (var item in allHighScores)
+                foreach (var item in _allHighScores)
                 {
                     string[] itemSplit = item.Split(';');
 
                     for (int i = 0; i < itemSplit.Length-1; i++)
                     {
-                        if (itemSplit[i] == selectedExercise)
+                        if (itemSplit[i] == _selectedExercise)
                         {
                             tableHighScore = itemSplit[1];
                         }
@@ -260,14 +260,14 @@ namespace Tables.Wpf
                 }
             }
 
-            highScore = int.Parse(tableHighScore);
+            _highScore = int.Parse(tableHighScore);
             lblHighScore.Content = tableHighScore;
         }
 
         private void GenerateQuestion(int tableNumber)
         {
             // flip a coin for multiplication/division
-            int decision = rng.Next(0, 2);
+            int decision = _rng.Next(0, 2);
 
             int randomNr;
             string question;
@@ -285,7 +285,7 @@ namespace Tables.Wpf
                     randomNr = GenerateRandom();                    
                     question = $"{randomNr} X {tableNumber}";
                 }
-                answer = tableNumber * randomNr;
+                _answer = tableNumber * randomNr;
                 lblQuestion.Content = question;
             }
             else
@@ -298,7 +298,7 @@ namespace Tables.Wpf
                     randomNr = GenerateRandom();
                     question = $"{randomNr*tableNumber} : {tableNumber}";
                 }
-                answer = randomNr;                
+                _answer = randomNr;                
                 lblQuestion.Content = question;
             }
 
@@ -312,13 +312,13 @@ namespace Tables.Wpf
         // if not training mode, filter out numbers that are too easy
         private int GenerateRandom()
         {
-            if (selectedExercise == "Alles")
+            if (_selectedExercise == "Alles")
             {
-                return rng.Next(2, 10);
+                return _rng.Next(2, 10);
             }
             else
             {
-                return rng.Next(2, 11);
+                return _rng.Next(2, 11);
             }
         }
 
@@ -332,10 +332,10 @@ namespace Tables.Wpf
         // read high scores from file
         private string[]? ReadHighScores()
         {
-            if (highScorePath != null)
+            if (_highScorePath != null)
             {
-                allHighScores = File.ReadAllLines(highScorePath);
-                return allHighScores;
+                _allHighScores = File.ReadAllLines(_highScorePath);
+                return _allHighScores;
             }
 
             return null;
@@ -344,18 +344,18 @@ namespace Tables.Wpf
         // write new high score to file
         private void WriteHighScores()
         {
-            if (highScorePath != null && allHighScores != null) 
+            if (_highScorePath != null && _allHighScores != null) 
             {
-                File.WriteAllLines(highScorePath, allHighScores);
+                File.WriteAllLines(_highScorePath, _allHighScores);
             }            
         }
 
         // check if last score is a new high score
         private void CheckScore(int score)
         {
-            if (score > highScore)
+            if (score > _highScore)
             {
-                highScore = score;
+                _highScore = score;
                 EditHighScore();
                 WriteHighScores();
             }
@@ -364,20 +364,20 @@ namespace Tables.Wpf
         // change highscore entry for current table
         private void EditHighScore()
         {
-            if (allHighScores != null)
+            if (_allHighScores != null)
             {
-                for (int i = 0; i < allHighScores.Length - 1; i++)
+                for (int i = 0; i < _allHighScores.Length - 1; i++)
                 {
-                    string[] itemSplit = allHighScores[i].Split(';');
-                    if (itemSplit[0] == selectedExercise)
+                    string[] itemSplit = _allHighScores[i].Split(';');
+                    if (itemSplit[0] == _selectedExercise)
                     {
-                        allHighScores[i] = $"{selectedExercise};{highScore}";
+                        _allHighScores[i] = $"{_selectedExercise};{_highScore}";
                     }
                 }
 
-                if (selectedExercise == "Alles")
+                if (_selectedExercise == "Alles")
                 {
-                    allHighScores[allHighScores.Length - 1] = $"{selectedExercise};{highScore}";
+                    _allHighScores[_allHighScores.Length - 1] = $"{_selectedExercise};{_highScore}";
                 }
             }
         }
@@ -385,18 +385,18 @@ namespace Tables.Wpf
         // make a new high score file if it doesn't exist yet
         private void CreateScoreFile()
         {            
-            if (options != null)
+            if (_options != null)
             {
-                int arraySize = options.Length + 1;
+                int arraySize = _options.Length + 1;
 
-                allHighScores = new string[arraySize];
+                _allHighScores = new string[arraySize];
 
                 for (int i = 0; i < arraySize - 1; i++)
                 {
-                    allHighScores[i] = options[i] + ";0";
+                    _allHighScores[i] = _options[i] + ";0";
                 }
 
-                allHighScores[arraySize - 1] = "Alles;0";
+                _allHighScores[arraySize - 1] = "Alles;0";
 
                 WriteHighScores();
             }            
