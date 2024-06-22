@@ -224,7 +224,7 @@ namespace Tables.Wpf
         private void Seed()
         {
             cmbSelection.Items.Add("Alles");
-            _options = new int[] { 2, 3, 4, 5, 6, 8, 9, 10 };
+            _options = new int[] { 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             foreach (int option in _options)
             {
                 cmbSelection.Items.Add(option);
